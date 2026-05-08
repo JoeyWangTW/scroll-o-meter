@@ -33,8 +33,15 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            bindings = <&push 0 0>;
-            sensor-bindings = <&enc_scroll>;
+            /* Diagnostic build: bypass all custom behaviors.
+               If pressing the switch types 'A' in a focused field and
+               rotating the encoder sends Up/Down arrows, then kscan +
+               sensor wiring + HID keyboard reports are all working —
+               the bug is in our custom &count_print / &count_reset
+               path or in &msc. If even this minimal version produces
+               nothing, the bug is at dts / board / pin level. */
+            bindings = <&kp A>;
+            sensor-bindings = <&inc_dec_kp UP DOWN>;
         };
     };
 };
