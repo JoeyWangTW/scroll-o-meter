@@ -15,13 +15,11 @@
              D4 → 'c'
              D5 → 'd'
              D6 → 'e'
-           Encoder rotation sends C_VOL_UP / C_VOL_DOWN — these are
-           consumer (media) reports, which take effect on iOS even
-           without a focused text field, so we can verify both
-           HID-keyboard and HID-consumer paths independently. */
+           Encoder rotation sends Up/Down arrows — visible as cursor
+           moves in any text field. */
         default_layer {
             bindings = <&kp A &kp B &kp C &kp D &kp E>;
-            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DOWN>;
+            sensor-bindings = <&inc_dec_kp UP DOWN>;
         };
     };
 };
