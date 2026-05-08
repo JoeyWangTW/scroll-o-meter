@@ -8,6 +8,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
+#include <drivers/behavior.h>
 #include <zmk/behavior.h>
 
 #include "scroll_counter.h"
