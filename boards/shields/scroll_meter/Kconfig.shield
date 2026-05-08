@@ -1,0 +1,2 @@
+config SHIELD_SCROLL_METER
+    def_bool $(shields_list_contains,scroll_meter)

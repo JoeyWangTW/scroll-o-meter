@@ -1,0 +1,11 @@
+if(CONFIG_ZMK_AGENT_IOS_POINTER_NUDGE)
+  zephyr_library_named(scroll_meter_ios_pointer_nudge)
+  zephyr_library_sources(src/ios_pointer_nudge.c)
+endif()
+
+if(CONFIG_ZMK_SCROLL_COUNTER)
+  zephyr_library_named(scroll_meter_counter)
+  zephyr_library_sources(src/scroll_counter.c)
+  zephyr_library_sources(src/behavior_count_print.c)
+  zephyr_library_sources(src/behavior_count_reset.c)
+endif()

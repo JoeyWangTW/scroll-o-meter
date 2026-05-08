@@ -1,0 +1,5 @@
+description: Reset the scroll-counter to zero
+
+compatible: "zmk,behavior-count-reset"
+
+include: zero_param.yaml

@@ -1,0 +1,11 @@
+file_format: "2"
+id: scroll_meter
+name: Scroll-o-meter
+type: shield
+url: https://github.com/JoeyWangTW/scroll-o-meter
+requires:
+  - pro_micro
+features:
+  - keys
+  - encoder
+  - pointer

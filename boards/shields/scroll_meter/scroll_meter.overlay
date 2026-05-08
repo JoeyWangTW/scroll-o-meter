@@ -1,0 +1,53 @@
+#include <dt-bindings/zmk/matrix_transform.h>
+
+/ {
+    chosen {
+        zmk,kscan = &kscan0;
+        zmk,matrix-transform = &single_key_transform;
+    };
+
+    /* EC11 rotary encoder.
+       A → pro_micro pin 20 (F5)   - rotation phase A
+       B → pro_micro pin 21 (F4)   - rotation phase B
+       C → GND                     - common
+       Switch → pin 4 (D4) to GND, pulled up internally below
+    */
+    encoder: encoder {
+        compatible = "alps,ec11";
+        a-gpios = <&pro_micro 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&pro_micro 21 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        steps = <80>;
+        status = "okay";
+    };
+
+    sensors: sensors {
+        compatible = "zmk,keymap-sensors";
+        sensors = <&encoder>;
+        triggers-per-rotation = <40>;
+    };
+
+    /* Single press button (encoder push) — direct GPIO, no matrix. */
+    kscan0: kscan {
+        compatible = "zmk,kscan-gpio-direct";
+        wakeup-source;
+        input-gpios = <&pro_micro 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    };
+
+    single_key_transform: keymap_transform_0 {
+        compatible = "zmk,matrix-transform";
+        columns = <1>;
+        rows = <1>;
+        map = <RC(0,0)>;
+    };
+
+    behaviors {
+        count_print: count_print {
+            compatible = "zmk,behavior-count-print";
+            #binding-cells = <0>;
+        };
+        count_reset: count_reset {
+            compatible = "zmk,behavior-count-reset";
+            #binding-cells = <0>;
+        };
+    };
+};

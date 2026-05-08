@@ -1,0 +1,36 @@
+config ZMK_AGENT_IOS_POINTER_NUDGE
+	bool "Send a no-op mouse report on reconnect to wake iOS pointer routing"
+	depends on ZMK_BLE && ZMK_POINTING
+	default y
+	help
+	  iOS classifies BLE HID composite keyboard+mouse devices and tends
+	  to put AssistiveTouch's pointer routing to sleep across disconnects.
+	  When enabled, this option installs a Bluetooth security_changed
+	  callback that emits a small mouse-movement burst shortly after each
+	  pairing / reconnect reaches encrypted state, which wakes
+	  AssistiveTouch pointer recognition without manual toggling.
+
+config ZMK_AGENT_IOS_POINTER_NUDGE_DELAY_MS
+	int "Delay after security_changed before sending nudge (ms)"
+	depends on ZMK_AGENT_IOS_POINTER_NUDGE
+	default 1200
+
+config ZMK_SCROLL_COUNTER
+	bool "Track total scroll detents and expose print/reset behaviors"
+	depends on ZMK_POINTING && SETTINGS
+	default y
+	help
+	  Counts every encoder rotation tick (positive or negative) and
+	  persists the running total to NVS via the Zephyr settings backend.
+	  Exposes &count_print (types the current count as decimal digits)
+	  and &count_reset (zeroes the counter).
+
+config ZMK_SCROLL_COUNTER_PERSIST_EVERY
+	int "Save counter to NVS every N ticks (0 = save only on reset)"
+	depends on ZMK_SCROLL_COUNTER
+	default 25
+	help
+	  Settings writes hit flash, so we batch. Default of 25 ≈ less than
+	  one wear-cycle per typical day even at heavy scroll volume. The
+	  counter is also flushed on reset and on graceful shutdown paths
+	  that hit the settings handler.

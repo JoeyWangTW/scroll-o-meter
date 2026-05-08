@@ -1,0 +1,40 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/mouse.h>
+#include <dt-bindings/zmk/pointing.h>
+
+/ {
+    behaviors {
+        /* Encoder mouse-scroll. Same tuning that landed on the iphone-scroll-encoder
+           branch: speed 90 + tap-ms 18 ⇒ ~1 wheel unit per detent so iOS scroll
+           acceleration stays sane. The scroll_counter listener observes the same
+           sensor events and bumps the persisted counter on every detent. */
+        enc_scroll: enc_scroll {
+            compatible = "zmk,behavior-sensor-rotate";
+            #sensor-binding-cells = <0>;
+            bindings = <&msc MOVE_Y(-90)>, <&msc MOVE_Y(90)>;
+            tap-ms = <18>;
+        };
+
+        /* Encoder push:
+             tap  → type the running count out as decimal digits
+             hold → reset counter to 0 (>=600ms hold) */
+        push: push {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <600>;
+            flavor = "tap-preferred";
+            bindings = <&count_reset>, <&count_print>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            bindings = <&push 0 0>;
+            sensor-bindings = <&enc_scroll>;
+        };
+    };
+};

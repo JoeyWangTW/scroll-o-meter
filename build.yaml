@@ -1,0 +1,6 @@
+---
+include:
+  - board: nice_nano
+    shield: scroll_meter
+  - board: nice_nano
+    shield: settings_reset

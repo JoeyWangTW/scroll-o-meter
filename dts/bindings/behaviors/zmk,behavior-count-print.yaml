@@ -1,0 +1,5 @@
+description: Type the running scroll-counter value as decimal digits
+
+compatible: "zmk,behavior-count-print"
+
+include: zero_param.yaml

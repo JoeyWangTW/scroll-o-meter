@@ -1,0 +1,6 @@
+if SHIELD_SCROLL_METER
+
+config ZMK_KEYBOARD_NAME
+    default "Scroll-o-meter"
+
+endif
