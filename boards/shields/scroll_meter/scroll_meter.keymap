@@ -8,17 +8,11 @@
     keymap {
         compatible = "zmk,keymap";
 
-        /* DIAGNOSTIC: each of the 5 kscan inputs types a distinct letter.
-           User shorts each pin (D2..D6) to GND in turn:
-             D2 → 'a'  (also: encoder-side pin? shouldn't be, A is on D7)
-             D3 → 'b'
-             D4 → 'c'
-             D5 → 'd'
-             D6 → 'e'
-           Encoder rotation sends Up/Down arrows — visible as cursor
-           moves in any text field. */
+        /* Encoder rotation should produce Up/Down arrows now that
+           it's on D2/D3 (the proven-working pins).
+           Kscan reduced to D4/D5/D6 → c/d/e for sanity check. */
         default_layer {
-            bindings = <&kp A &kp B &kp C &kp D &kp E>;
+            bindings = <&kp C &kp D &kp E>;
             sensor-bindings = <&inc_dec_kp UP DOWN>;
         };
     };
