@@ -56,3 +56,12 @@
         };
     };
 };
+
+/* Silence the BLE advertising / status indicator LED. nice_nano defines
+   blue_led on P0.15 and Zephyr's BT host blinks it during advertising;
+   on the SuperMini-NRF52840 the LED is wired to a different pin so this
+   may or may not have an effect, but disabling the node ensures ZMK
+   stops driving P0.15 either way. */
+&blue_led {
+    status = "disabled";
+};
