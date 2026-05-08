@@ -16,13 +16,18 @@ on reconnect, legacy 8-bit wheel reports.
 
 ### Wiring
 
-| Encoder pin | nice_nano pin |
-|-------------|---------------|
-| A (rotation) | pin 20 (`F5`) — pulled up |
-| B (rotation) | pin 21 (`F4`) — pulled up |
-| C (common)   | GND |
-| Switch pin 1 | pin 4 (`D4`) — pulled up |
-| Switch pin 2 | GND |
+All three GPIO pins are on the **left side** of the Pro Micro footprint
+because that side is identical between nice_nano and SuperMini-NRF52840
+clones (D0–D9 → P0.06, P0.08, P0.17, P0.20, P0.22, P0.24, P1.00, P0.11,
+P1.04, P1.06). Right-side pin maps differ between the two boards.
+
+| Encoder pin | Silkscreen | MCU pin | Position on Pro Micro footprint |
+|-------------|------------|---------|------------------|
+| A (rotation) | `D2` | P0.17 | left side, 5th pin from top |
+| B (rotation) | `D3` | P0.20 | left side, 6th pin from top |
+| C (common)   | `GND` | — | any GND pin |
+| Switch pin 1 | `D4` | P0.22 | left side, 7th pin from top |
+| Switch pin 2 | `GND` | — | any GND pin |
 
 If you change pins, update `boards/shields/scroll_meter/scroll_meter.overlay`.
 

@@ -6,16 +6,21 @@
         zmk,matrix-transform = &single_key_transform;
     };
 
-    /* EC11 rotary encoder.
-       A → pro_micro pin 20 (F5)   - rotation phase A
-       B → pro_micro pin 21 (F4)   - rotation phase B
-       C → GND                     - common
-       Switch → pin 4 (D4) to GND, pulled up internally below
+    /* EC11 rotary encoder. Pins all chosen on the LEFT side of the
+       Pro Micro footprint because nice_nano and SuperMini-NRF52840
+       boards diverge on right-side pin assignments — left side is
+       identical (D0-D9 → P0.06, P0.08, P0.17, P0.20, P0.22, P0.24,
+       P1.00, P0.11, P1.04, P1.06).
+
+       A → pro_micro pin 2 (D2 / P0.17)   - rotation phase A
+       B → pro_micro pin 3 (D3 / P0.20)   - rotation phase B
+       C → GND                            - encoder common
+       Switch → pin 4 (D4 / P0.22) to GND
     */
     encoder: encoder {
         compatible = "alps,ec11";
-        a-gpios = <&pro_micro 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        b-gpios = <&pro_micro 21 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        a-gpios = <&pro_micro 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&pro_micro 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         steps = <80>;
         status = "okay";
     };
