@@ -55,14 +55,12 @@
     };
 };
 
-/* Explicitly disable peripherals whose default pinctrl claims left-side
-   pins. nice_nano.dts assigns pinctrl-0 to i2c0 referencing P0.17/P0.20
-   (D2/D3) and to spi1 / uart0 — even if those peripherals lack
-   status="okay" in the upstream board, leaving them present invites
-   confusion. Force them off. */
+/* Force i2c0 off — its default pinctrl claims P0.17 (D2) and P0.20 (D3),
+   the same pins ZMK encoders / kscan would want. The upstream nice_nano
+   board file leaves i2c0 without status="okay", but being explicit costs
+   nothing and removes one variable. spi1/uart0 are left alone because
+   ZMK_USB_LOGGING selects UART_CONSOLE on top of uart0. */
 &i2c0  { status = "disabled"; };
-&spi1  { status = "disabled"; };
-&uart0 { status = "disabled"; };
 
 &blue_led {
     status = "disabled";
