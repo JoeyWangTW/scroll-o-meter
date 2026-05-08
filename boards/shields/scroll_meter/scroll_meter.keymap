@@ -5,43 +5,23 @@
 #include <dt-bindings/zmk/pointing.h>
 
 / {
-    behaviors {
-        /* Encoder mouse-scroll. Same tuning that landed on the iphone-scroll-encoder
-           branch: speed 90 + tap-ms 18 ⇒ ~1 wheel unit per detent so iOS scroll
-           acceleration stays sane. The scroll_counter listener observes the same
-           sensor events and bumps the persisted counter on every detent. */
-        enc_scroll: enc_scroll {
-            compatible = "zmk,behavior-sensor-rotate";
-            #sensor-binding-cells = <0>;
-            bindings = <&msc MOVE_Y(-90)>, <&msc MOVE_Y(90)>;
-            tap-ms = <18>;
-        };
-
-        /* Encoder push:
-             tap  → type the running count out as decimal digits
-             hold → reset counter to 0 (>=600ms hold) */
-        push: push {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            tapping-term-ms = <600>;
-            flavor = "tap-preferred";
-            bindings = <&count_reset>, <&count_print>;
-        };
-    };
-
     keymap {
         compatible = "zmk,keymap";
 
+        /* DIAGNOSTIC: each of the 5 kscan inputs types a distinct letter.
+           User shorts each pin (D2..D6) to GND in turn:
+             D2 → 'a'  (also: encoder-side pin? shouldn't be, A is on D7)
+             D3 → 'b'
+             D4 → 'c'
+             D5 → 'd'
+             D6 → 'e'
+           Encoder rotation sends C_VOL_UP / C_VOL_DOWN — these are
+           consumer (media) reports, which take effect on iOS even
+           without a focused text field, so we can verify both
+           HID-keyboard and HID-consumer paths independently. */
         default_layer {
-            /* Diagnostic build: bypass all custom behaviors.
-               If pressing the switch types 'A' in a focused field and
-               rotating the encoder sends Up/Down arrows, then kscan +
-               sensor wiring + HID keyboard reports are all working —
-               the bug is in our custom &count_print / &count_reset
-               path or in &msc. If even this minimal version produces
-               nothing, the bug is at dts / board / pin level. */
-            bindings = <&kp A>;
-            sensor-bindings = <&inc_dec_kp UP DOWN>;
+            bindings = <&kp A &kp B &kp C &kp D &kp E>;
+            sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DOWN>;
         };
     };
 };

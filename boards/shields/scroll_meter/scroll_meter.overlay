@@ -3,24 +3,17 @@
 / {
     chosen {
         zmk,kscan = &kscan0;
-        zmk,matrix-transform = &single_key_transform;
+        zmk,matrix-transform = &row_transform;
     };
 
-    /* EC11 rotary encoder. Pins all chosen on the LEFT side of the
-       Pro Micro footprint because nice_nano and SuperMini-NRF52840
-       boards diverge on right-side pin assignments — left side is
-       identical (D0-D9 → P0.06, P0.08, P0.17, P0.20, P0.22, P0.24,
-       P1.00, P0.11, P1.04, P1.06).
-
-       A → pro_micro pin 2 (D2 / P0.17)   - rotation phase A
-       B → pro_micro pin 3 (D3 / P0.20)   - rotation phase B
-       C → GND                            - encoder common
-       Switch → pin 4 (D4 / P0.22) to GND
-    */
+    /* DIAGNOSTIC BUILD: 5 separate kscan inputs on left-side pins so
+       we can identify which (if any) actually fires on the user's
+       hardware. Each maps to a unique letter via the keymap. Encoder
+       moved to D7/D8 (well clear of i2c0's default pinctrl on D2/D3). */
     encoder: encoder {
         compatible = "alps,ec11";
-        a-gpios = <&pro_micro 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
-        b-gpios = <&pro_micro 3 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        a-gpios = <&pro_micro 7 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
+        b-gpios = <&pro_micro 8 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
         steps = <80>;
         status = "okay";
     };
@@ -31,18 +24,23 @@
         triggers-per-rotation = <40>;
     };
 
-    /* Single press button (encoder push) — direct GPIO, no matrix. */
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-direct";
         wakeup-source;
-        input-gpios = <&pro_micro 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        input-gpios
+            = <&pro_micro 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&pro_micro 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&pro_micro 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&pro_micro 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&pro_micro 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            ;
     };
 
-    single_key_transform: keymap_transform_0 {
+    row_transform: keymap_transform_0 {
         compatible = "zmk,matrix-transform";
-        columns = <1>;
+        columns = <5>;
         rows = <1>;
-        map = <RC(0,0)>;
+        map = <RC(0,0) RC(0,1) RC(0,2) RC(0,3) RC(0,4)>;
     };
 
     behaviors {
@@ -57,11 +55,15 @@
     };
 };
 
-/* Silence the BLE advertising / status indicator LED. nice_nano defines
-   blue_led on P0.15 and Zephyr's BT host blinks it during advertising;
-   on the SuperMini-NRF52840 the LED is wired to a different pin so this
-   may or may not have an effect, but disabling the node ensures ZMK
-   stops driving P0.15 either way. */
+/* Explicitly disable peripherals whose default pinctrl claims left-side
+   pins. nice_nano.dts assigns pinctrl-0 to i2c0 referencing P0.17/P0.20
+   (D2/D3) and to spi1 / uart0 — even if those peripherals lack
+   status="okay" in the upstream board, leaving them present invites
+   confusion. Force them off. */
+&i2c0  { status = "disabled"; };
+&spi1  { status = "disabled"; };
+&uart0 { status = "disabled"; };
+
 &blue_led {
     status = "disabled";
 };
