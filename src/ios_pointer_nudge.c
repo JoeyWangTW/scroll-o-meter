@@ -46,13 +46,17 @@ struct nudge_step {
     uint16_t next_delay_ms;
 };
 
-/* Silent wake: only a self-cancelling scroll burst (+1, -1). The
-   earlier cursor-moving steps (X+60, Y+320) noticeably displaced the
-   AT cursor on every reconnect — distracting. Scroll-wake alone is
-   enough to subscribe AT to scroll events on most reconnects in
-   practice; if it stops working we escalate by adding tiny
-   self-cancelling X movements. */
+/* iOS scales differently for stepped vs single pushes. Stepped X
+   lands cleanly; rapid stepped Y appears to be coalesced or
+   gesture-recognized. Use stepped for X, a single bigger push for Y.
+   Net displacement: cursor lands roughly mid-screen on each reconnect.
+   We tried scroll-only and net-zero variants — neither reliably wakes
+   AT in practice. agent-keyboard's iphone-scroll-encoder branch went
+   through nine iterations and ended on this exact sequence. */
 static const struct nudge_step steps[] = {
+    {  30,   0,  0,  80 },
+    {  30,   0,  0,  150 },
+    {   0, 320,  0,  200 },
     {   0,   0,  1,  120 },
     {   0,   0, -1,  120 },
     {   0,   0,  0,  0 },
