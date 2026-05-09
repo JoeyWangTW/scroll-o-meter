@@ -6,14 +6,25 @@
 
 / {
     behaviors {
-        /* Match agent-keyboard's iphone-scroll-encoder branch exactly:
-           speed 90 with tap-ms 18 emits ~1 wheel unit per detent on
-           iOS so scroll-acceleration stays sane. */
+        /* Encoder mouse-scroll: matches agent-keyboard's iphone-scroll-encoder
+           branch tuning — speed 90 with tap-ms 18 emits ~1 wheel unit
+           per detent on iOS, keeping macOS scroll-acceleration sane. */
         enc_scroll: enc_scroll {
             compatible = "zmk,behavior-sensor-rotate";
             #sensor-binding-cells = <0>;
             bindings = <&msc MOVE_Y(-90)>, <&msc MOVE_Y(90)>;
             tap-ms = <18>;
+        };
+
+        /* Encoder push:
+             tap (≤600ms)   → type the running detent count as digits
+             hold (>600ms)  → reset the counter to 0 */
+        push: push {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <600>;
+            flavor = "tap-preferred";
+            bindings = <&count_reset>, <&count_print>;
         };
     };
 
@@ -21,9 +32,7 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            /* Encoder: HID mouse-scroll (iOS via AssistiveTouch + Mac).
-               Kscan still on D4/D5/D6 → c/d/e for now. */
-            bindings = <&kp C &kp D &kp E>;
+            bindings = <&push 0 0>;
             sensor-bindings = <&enc_scroll>;
         };
     };

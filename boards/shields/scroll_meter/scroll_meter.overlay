@@ -6,10 +6,11 @@
         zmk,matrix-transform = &row_transform;
     };
 
-    /* DIAGNOSTIC BUILD: encoder moved to D2/D3, the exact pins we just
-       confirmed work for HID input via the kscan diagnostic. If
-       rotation works here, D7/D8 specifically were the problem. If it
-       still doesn't work, the EC11 driver path or encoder hardware is. */
+    /* Final wiring:
+         A      → D2 (P0.17)   - encoder rotation phase A
+         B      → D3 (P0.20)   - encoder rotation phase B
+         C      → GND          - encoder common
+         Switch → D4 (P0.22) → GND when pressed */
     encoder: encoder {
         compatible = "alps,ec11";
         a-gpios = <&pro_micro 2 (GPIO_ACTIVE_HIGH | GPIO_PULL_UP)>;
@@ -27,18 +28,14 @@
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-direct";
         wakeup-source;
-        input-gpios
-            = <&pro_micro 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&pro_micro 5 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&pro_micro 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            ;
+        input-gpios = <&pro_micro 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
 
     row_transform: keymap_transform_0 {
         compatible = "zmk,matrix-transform";
-        columns = <3>;
+        columns = <1>;
         rows = <1>;
-        map = <RC(0,0) RC(0,1) RC(0,2)>;
+        map = <RC(0,0)>;
     };
 
     behaviors {
