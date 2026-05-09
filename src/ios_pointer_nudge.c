@@ -46,20 +46,27 @@ struct nudge_step {
     uint16_t next_delay_ms;
 };
 
-/* iOS scales differently for stepped vs single pushes. Stepped X
-   lands cleanly; rapid stepped Y appears to be coalesced or
-   gesture-recognized. Use stepped for X, a single bigger push for Y.
-   Net displacement: cursor lands roughly mid-screen on each reconnect.
-   We tried scroll-only and net-zero variants — neither reliably wakes
-   AT in practice. agent-keyboard's iphone-scroll-encoder branch went
-   through nine iterations and ended on this exact sequence. */
+/* Land the AT cursor at screen-center on every reconnect, independent
+   of where it was sleeping.
+
+   iOS HID is relative-motion only, but the host clamps the cursor at
+   screen edges. So: send a large negative X+Y to park at top-left,
+   then walk in known positive steps to roughly center on a typical
+   iPhone (~390 wide × ~844 tall logical points). The 200ms idle
+   between park and walk lets iOS process the clamp before we resume.
+   Final scroll +1/-1 is the AT pointer-routing wake. */
 static const struct nudge_step steps[] = {
-    {  30,   0,  0,  80 },
-    {  30,   0,  0,  150 },
-    {   0, 320,  0,  200 },
-    {   0,   0,  1,  120 },
-    {   0,   0, -1,  120 },
-    {   0,   0,  0,  0 },
+    /* Park: massive negative diagonal — iOS clamps to (0,0). */
+    { -2000, -2000,  0,  200 },
+    /* Walk to ~screen center via stepped X (rapid Y gets coalesced). */
+    {   60,    0,   0,   80 },
+    {   60,    0,   0,   80 },
+    {   75,    0,   0,  150 },
+    {    0,  420,   0,  200 },
+    /* Scroll wake, self-cancelling. */
+    {    0,    0,   1,  120 },
+    {    0,    0,  -1,  120 },
+    {    0,    0,   0,    0 },
 };
 
 static size_t step_index;
