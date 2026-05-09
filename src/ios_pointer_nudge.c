@@ -58,11 +58,12 @@ struct nudge_step {
 static const struct nudge_step steps[] = {
     /* Park: massive negative diagonal — iOS clamps to (0,0). */
     { -2000, -2000,  0,  200 },
-    /* Walk to ~center: ~100 X, ~200 Y after iOS's 2x scaling. */
-    {   30,    0,   0,   80 },
-    {   30,    0,   0,   80 },
-    {   40,    0,   0,  150 },
-    {    0,  200,   0,  200 },
+    /* Walk to ~center: empirically iOS's AT cursor scales HID deltas
+       ~4x on this iPhone, so halving again from previous attempt. */
+    {   15,    0,   0,   80 },
+    {   15,    0,   0,   80 },
+    {   20,    0,   0,  150 },
+    {    0,  100,   0,  200 },
     /* Scroll wake, self-cancelling. */
     {    0,    0,   1,  120 },
     {    0,    0,  -1,  120 },
