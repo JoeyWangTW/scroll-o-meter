@@ -46,26 +46,29 @@ struct nudge_step {
     uint16_t next_delay_ms;
 };
 
-/* CALIBRATION BUILD — fires a known sequence with long pauses so the
-   user can describe exactly where the cursor lands at each step.
-   We'll use those reports to back out iOS's actual HID-delta scaling
-   on this iPhone, then pick walk values that target screen-center.
+/* CALIBRATION BUILD v2 — observed: park (-2000,-2000) didn't visibly
+   move cursor and +50 X had no visible effect; +50 Y moved cursor
+   down ~10% screen. Suggests iOS either drops large single deltas or
+   has a min-magnitude threshold under low-velocity for AT.
 
-   Sequence:
-     1. Park to (0,0) via -2000/-2000     [user sees cursor at top-left]
-     2. Pause 1 s
-     3. Move +50 X                         [user reports new X position]
-     4. Pause 1 s
-     5. Move +50 Y                         [user reports new Y position]
-     6. Pause 1 s
-     7. Scroll wake (+1, -1)               [AT pointer routing wakes] */
+   This sequence drops the park step and sends discrete +100 moves
+   one axis at a time with long pauses so the user can describe each
+   step's effect.
+
+   Sequence (1.5 s between steps):
+     1. +100 X
+     2. +100 X
+     3. +100 Y
+     4. +100 Y
+     5. Scroll wake (+1, -1) */
 static const struct nudge_step steps[] = {
-    { -2000, -2000,  0, 1000 },
-    {    50,    0,   0, 1000 },
-    {     0,   50,   0, 1000 },
-    {     0,    0,   1,  120 },
-    {     0,    0,  -1,  120 },
-    {     0,    0,   0,    0 },
+    {  100,    0,   0, 1500 },
+    {  100,    0,   0, 1500 },
+    {    0,  100,   0, 1500 },
+    {    0,  100,   0, 1500 },
+    {    0,    0,   1,  120 },
+    {    0,    0,  -1,  120 },
+    {    0,    0,   0,    0 },
 };
 
 static size_t step_index;
