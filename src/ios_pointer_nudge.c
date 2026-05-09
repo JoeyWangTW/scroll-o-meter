@@ -77,8 +77,13 @@ static void security_changed(struct bt_conn *conn, bt_security_t level,
         return;
     }
     step_index = 0;
-    k_work_reschedule(&step_work,
-                      K_MSEC(CONFIG_ZMK_AGENT_IOS_POINTER_NUDGE_DELAY_MS));
+    /* Match agent-keyboard's iphone-scroll-encoder branch exactly:
+       500ms after security_changed. The Kconfig default of 1200ms
+       was a leftover from the initial nudge commit; later commits
+       in agent-keyboard hardcoded 500ms but never updated the
+       Kconfig. iOS's HID-input CCC subscription window appears to
+       close before 1.2s, so the report would be dropped. */
+    k_work_reschedule(&step_work, K_MSEC(500));
 }
 
 BT_CONN_CB_DEFINE(scroll_meter_ios_nudge_cb) = {
