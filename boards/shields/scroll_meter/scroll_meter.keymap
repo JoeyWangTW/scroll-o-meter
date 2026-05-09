@@ -5,15 +5,26 @@
 #include <dt-bindings/zmk/pointing.h>
 
 / {
+    behaviors {
+        /* Match agent-keyboard's iphone-scroll-encoder branch exactly:
+           speed 90 with tap-ms 18 emits ~1 wheel unit per detent on
+           iOS so scroll-acceleration stays sane. */
+        enc_scroll: enc_scroll {
+            compatible = "zmk,behavior-sensor-rotate";
+            #sensor-binding-cells = <0>;
+            bindings = <&msc MOVE_Y(-90)>, <&msc MOVE_Y(90)>;
+            tap-ms = <18>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
-        /* Encoder rotation should produce Up/Down arrows now that
-           it's on D2/D3 (the proven-working pins).
-           Kscan reduced to D4/D5/D6 → c/d/e for sanity check. */
         default_layer {
+            /* Encoder: HID mouse-scroll (iOS via AssistiveTouch + Mac).
+               Kscan still on D4/D5/D6 → c/d/e for now. */
             bindings = <&kp C &kp D &kp E>;
-            sensor-bindings = <&inc_dec_kp UP DOWN>;
+            sensor-bindings = <&enc_scroll>;
         };
     };
 };

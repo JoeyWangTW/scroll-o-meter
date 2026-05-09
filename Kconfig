@@ -1,7 +1,7 @@
 config ZMK_AGENT_IOS_POINTER_NUDGE
 	bool "Send a no-op mouse report on reconnect to wake iOS pointer routing"
 	depends on ZMK_BLE && ZMK_POINTING
-	default n
+	default y
 	help
 	  iOS classifies BLE HID composite keyboard+mouse devices and tends
 	  to put AssistiveTouch's pointer routing to sleep across disconnects.
