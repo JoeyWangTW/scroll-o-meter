@@ -46,29 +46,19 @@ struct nudge_step {
     uint16_t next_delay_ms;
 };
 
-/* CALIBRATION BUILD v2 — observed: park (-2000,-2000) didn't visibly
-   move cursor and +50 X had no visible effect; +50 Y moved cursor
-   down ~10% screen. Suggests iOS either drops large single deltas or
-   has a min-magnitude threshold under low-velocity for AT.
-
-   This sequence drops the park step and sends discrete +100 moves
-   one axis at a time with long pauses so the user can describe each
-   step's effect.
-
-   Sequence (1.5 s between steps):
-     1. +100 X
-     2. +100 X
-     3. +100 Y
-     4. +100 Y
-     5. Scroll wake (+1, -1) */
+/* Match agent-keyboard's iphone-scroll-encoder branch exactly. From
+   their commit history: single large diagonal motions get partially
+   eaten by iOS gesture recognition (Y advances, X doesn't), so X is
+   stepped (+30, +30) and Y is one bigger push (+320). At default AT
+   pointer speed the X stepped scales ~2x (60 input → ~120 px effective)
+   and Y single-push scales ~0.7x (320 input → ~224 px effective). */
 static const struct nudge_step steps[] = {
-    {  100,    0,   0, 1500 },
-    {  100,    0,   0, 1500 },
-    {    0,  100,   0, 1500 },
-    {    0,  100,   0, 1500 },
-    {    0,    0,   1,  120 },
-    {    0,    0,  -1,  120 },
-    {    0,    0,   0,    0 },
+    {  30,   0,  0,  80 },
+    {  30,   0,  0,  150 },
+    {   0, 320,  0,  200 },
+    {   0,   0,  1,  120 },
+    {   0,   0, -1,  120 },
+    {   0,   0,  0,    0 },
 };
 
 static size_t step_index;
