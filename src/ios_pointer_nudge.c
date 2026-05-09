@@ -46,23 +46,23 @@ struct nudge_step {
     uint16_t next_delay_ms;
 };
 
-/* Land the AT cursor at screen-center on every reconnect, independent
+/* Land the AT cursor at screen-center on every reconnect, regardless
    of where it was sleeping.
 
-   iOS HID is relative-motion only, but the host clamps the cursor at
-   screen edges. So: send a large negative X+Y to park at top-left,
-   then walk in known positive steps to roughly center on a typical
-   iPhone (~390 wide × ~844 tall logical points). The 200ms idle
-   between park and walk lets iOS process the clamp before we resume.
-   Final scroll +1/-1 is the AT pointer-routing wake. */
+   iOS HID is relative-motion only. Trick: send a large negative X+Y
+   to park at top-left (iOS clamps at edges), then walk known positive
+   steps toward center. Empirically iOS scales AT pointer deltas at
+   roughly 2x — a +195 logical-step landed near right edge, not center,
+   so values are halved here vs my first pass. Final scroll +1/-1 is
+   the AT pointer-routing wake. */
 static const struct nudge_step steps[] = {
     /* Park: massive negative diagonal — iOS clamps to (0,0). */
     { -2000, -2000,  0,  200 },
-    /* Walk to ~screen center via stepped X (rapid Y gets coalesced). */
-    {   60,    0,   0,   80 },
-    {   60,    0,   0,   80 },
-    {   75,    0,   0,  150 },
-    {    0,  420,   0,  200 },
+    /* Walk to ~center: ~100 X, ~200 Y after iOS's 2x scaling. */
+    {   30,    0,   0,   80 },
+    {   30,    0,   0,   80 },
+    {   40,    0,   0,  150 },
+    {    0,  200,   0,  200 },
     /* Scroll wake, self-cancelling. */
     {    0,    0,   1,  120 },
     {    0,    0,  -1,  120 },
